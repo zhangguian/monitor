@@ -1,0 +1,48 @@
+{
+  "name": "monitor-sdk",
+  "version": "1.0.0",
+  "description": "web-monitor前端监控 SDK（行为/错误/曝光/性能/资源采集）",
+  "main": "dist/monitor-sdk.cjs.js",
+  "module": "dist/monitor-sdk.esm.js",
+  "browser": "dist/monitor-sdk.umd.js",
+  "types": "dist/types/index.d.ts",
+  "files": [
+    "dist/**/*",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "rollup -c rollup.config.cjs --bundleConfigAsCjs",
+    "build:watch": "rollup -c rollup.config.cjs -w --bundleConfigAsCjs",
+    "start:example": "cd example && npm start"
+  },
+  "author": "ZGA",
+  "license": "ISC",
+  "dependencies": {
+    "@babel/preset-typescript": "^7.28.5",
+    "@babel/runtime": "^7.28.4",
+    "core-js": "^3.46.0",
+    "tslib": "^2.8.1"
+  },
+  "keywords": [
+    "前端监控",
+    "行为埋点",
+    "错误监控",
+    "性能监控"
+  ],
+  "devDependencies": {
+    "@babel/core": "^7.28.5",
+    "@babel/plugin-transform-runtime": "^7.28.5",
+    "@babel/preset-env": "^7.28.5",
+    "@rollup/plugin-babel": "^6.1.0",
+    "@rollup/plugin-commonjs": "^29.0.0",
+    "@rollup/plugin-node-resolve": "^16.0.3",
+    "@rollup/plugin-terser": "^0.4.4",
+    "@rollup/plugin-typescript": "^12.3.0",
+    "@types/node": "^24.10.0",
+    "rollup": "^4.52.5",
+    "rollup-plugin-copy": "^3.5.0",
+    "rollup-plugin-web-worker-loader": "^1.7.0",
+    "rollup-plugin-worker-inline": "^1.0.7",
+    "typescript": "^5.9.3"
+  }
+}
