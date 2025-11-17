@@ -94,7 +94,7 @@ export namespace WorkerProtocol {
     // 主线程→Worker指令类型
     export type RequestType = 'INIT' | 'ADD_LOG' | 'RETRY_REPORT' | 'CLEAR_EXPIRED';
     // Worker→主线程响应类型
-    export type ResponseType = 'QUEUE_UPDATE' | 'REPORT_RESULT' | 'ERROR' | 'READY';
+    export type ResponseType = 'QUEUE_UPDATE' | 'REPORT_RESULT' | 'ERROR' | 'READY' | 'INIT_COMPLETE';
 
     // 主线程请求参数
     export interface Request {
@@ -108,3 +108,4 @@ export namespace WorkerProtocol {
         data?: any;
     }
 }
+

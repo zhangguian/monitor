@@ -5,9 +5,10 @@ import {ExposureCollector} from "../collector/exposure";
 import {PerformanceCollector} from "../collector/performance";
 import {ResourceCollector} from "../collector/resource";
 import {ConfigManager} from "./config";
-import {buildWorkerRequest, WorkerRequestType} from "./worker/message";
+import {buildWorkerRequest, WorkerRequestType,WorkerResponseType} from "./worker/message";
 import {getSdkVersion} from "../utils/sdk-version";
 import {storage} from "../reporter/storage";
+import {monitorWorkerCode} from "./worker/worker";
 
 let worker:Worker | null = null;
 let collectors: {
@@ -42,9 +43,10 @@ export const initMonitorSDK = (config: MonitorConfig) => {
 
         //创建 Web Worker 实例（日志处理/上报，避免阻塞主线程）
         createWorker();
-
-        // 实例化采集器
-        initCollectors();
+        //
+        console.log('worker', worker)
+        // // 实例化采集器
+        // initCollectors();
         console.log(`[MonitorSDK] 初始化成功（SDK 版本：${getSdkVersion()}）`);
     } catch (e) {
         console.error(`[MonitorSDK] 初始化失败：${e}`);
@@ -58,39 +60,53 @@ export const initMonitorSDK = (config: MonitorConfig) => {
  */
 
 const createWorker = () => {
+     if (worker) {
+    console.warn('[MonitorSDK] Worker 已存在，无需重复创建');
+    return;
+  }
+     console.log('[MonitorSDK] createWorker 被调用', new Date().getTime()); // 新增日志
     try {
-        // 注意：Worker 路径需符合项目打包规则（如 Vite 用 import.meta.url，Webpack 需用绝对路径）
-        import('./worker/worker.ts').then((workerModule:{ default: typeof Worker }) => {
-            const newWorker = new workerModule.default();
-            worker = newWorker; // 赋值给全局 worker 变量
-            if (worker) {
-                worker?.addEventListener('message', (event) => {
-                    const {type, data} = event.data;
-                    switch (type) {
-                        case 'READY':
-                            console.log('[MonitorSDK] Worker 线程就绪');
-                            // Worker 就绪后，同步初始化配置到 Worker
-                            worker?.postMessage(buildWorkerRequest(WorkerRequestType.INIT, {
-                                config: ConfigManager.getConfig(),
-                                sdkVersion: getSdkVersion()
-                            }));
-                            break;
-                        case 'ERROR':
-                            console.error('[MonitorSDK] Worker 错误：', data.error);
-                            break;
-                        default:
-                            // 其他消息（如队列长度更新，可按需处理）
-                            break;
-                    }
-                })
-                // Worker 错误监听
-                worker?.addEventListener('error', (err) => {
-                    console.error('[MonitorSDK] Worker 线程错误：', err);
-                    // Worker 崩溃时尝试重启（可选，增强可靠性）
-                    setTimeout(createWorker, 3000);
-                });
-            }
-        });
+      const blob = new Blob([monitorWorkerCode], { type: 'application/javascript' });
+      // 2. 生成 Blob URL（浏览器临时 URL，无跨域问题）
+      const workerUrl = URL.createObjectURL(blob);
+      // 3. 实例化 Worker（type: "module" 确保 ES 语法兼容）
+      worker = new Worker(workerUrl);
+      console.log('worker新增日志', worker); // 新增日志
+
+       worker?.addEventListener('message', (event) => {
+                const {type, data} = event.data;
+                switch (type) {
+                    case WorkerResponseType.READY:
+                        console.log('[MonitorSDK] Worker 线程就绪11111111111111111111111111111');
+                        // Worker 就绪后，同步初始化配置到 Worker
+                        worker?.postMessage(buildWorkerRequest(WorkerRequestType.INIT, {
+                            config: ConfigManager.getConfig(),
+                            sdkVersion: getSdkVersion()
+                        }));
+                         URL.revokeObjectURL(workerUrl);
+                        break;
+                    case WorkerResponseType.INIT_COMPLETE:
+                        console.log('[MonitorSDK] Worker 初始化完成===============================');
+                        // 可按需处理初始化完成的逻辑（如初始化采集器）
+                        initCollectors();
+                    break;
+                    case WorkerResponseType.ERROR:
+                        console.error('[MonitorSDK] Worker 错误：', data.error);
+                        break;
+                    default:
+                        // 其他消息（如队列长度更新，可按需处理）
+                        break;
+                }
+            });
+            // Worker 错误监听
+            worker?.addEventListener('error', (err) => {
+                console.error('[MonitorSDK] Worker 线程错误：', err);
+                if (!worker) return;
+                // Worker 崩溃时尝试重启（可选，增强可靠性）
+            setTimeout(() => {
+                if (!worker) createWorker(); // 确认 Worker 已销毁再重启
+            }, 3000);
+            });
 
     } catch (e) {
         console.error(`[MonitorSDK] 创建 Worker 失败：${e}`);

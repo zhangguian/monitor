@@ -14,6 +14,7 @@ export const WorkerRequestType: Record<WorkerProtocol.RequestType, WorkerProtoco
  */
 export const WorkerResponseType: Record<WorkerProtocol.ResponseType, WorkerProtocol.ResponseType> = {
     QUEUE_UPDATE: 'QUEUE_UPDATE',
+    INIT_COMPLETE: 'INIT_COMPLETE',
     REPORT_RESULT: 'REPORT_RESULT',
     ERROR: 'ERROR',
     READY: 'READY'

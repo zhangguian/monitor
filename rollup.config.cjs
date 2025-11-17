@@ -92,20 +92,15 @@ export default {
         webWorkerLoader({
             targetPlatform: 'browser', // 目标平台为浏览器
             inline: 'blob', // 强制内联为 Blob URL
-            loaders: [
-                // 让插件支持 TypeScript（需配合 ts-loader）
-                {
-                    test: /\.ts$/,
-                    loader: 'ts-loader',
-                    options: { configFile: './tsconfig.json' }
-                }
-            ]
+            format: 'iife',
+            preserveSource: true, // 不保留原始 Worker 源码，避免导出干扰
         }),
         typescript({
             tsconfig: './tsconfig.json', // 指定 TS 配置文件
             tslib: require.resolve('tslib'),
             declaration: true, // 生成类型声明（与 tsconfig 一致）
-            declarationDir: './dist/types' // 类型文件输出目录
+            declarationDir: './dist/types', // 类型文件输出目录
+            include: ['src/**/*'],
         }),
         // 1. 解析 node_modules 依赖（如 web-vitals）
         resolve(),

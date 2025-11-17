@@ -1,8 +1,10 @@
 {
   "compilerOptions": {
-    "allowImportingTsExtensions": true,
+    "allowUmdGlobalAccess":true,
+    "allowImportingTsExtensions":true,
+    "emitDeclarationOnly":true,
     "allowSyntheticDefaultImports": true,
-    "target": "ES6",
+    "target": "ES2020",
     "module": "ESNext",
     "lib": ["es2017", "dom"],
     "moduleResolution": "Node",
@@ -17,6 +19,7 @@
   },
   "include": [
     "src/**/*",
+     "src/declarations.d.ts",
     "rollup.config.cjs"
   ],
   "exclude": [
