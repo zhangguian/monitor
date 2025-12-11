@@ -57,12 +57,13 @@ export interface ExposureLog extends BaseLog {
 /** 错误日志类型 */
 export interface ErrorLog extends BaseLog {
     type: 'error';
-    errorType: 'js' | 'promise' | 'vue' | 'react'; // 错误类型
+    errorType: 'js' | 'promise' | 'vue' | 'react' | string; // 错误类型，支持自定义扩展
     message: string; // 错误信息
-    stack: string; // 错误栈
+    stack?: string; // 错误栈，改为可选
     filename?: string; // 错误所在文件
     line?: number; // 错误行号
     column?: number; // 错误列号
+    [key: string]: any; // 允许添加自定义字段
 }
 
 

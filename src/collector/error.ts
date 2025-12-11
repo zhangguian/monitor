@@ -103,7 +103,7 @@ export class ErrorCollector extends BaseCollector {
      */
     private handleError(errorData: Omit<ErrorLog, keyof BaseLog>): void {
         // 去重：通过 "message+stack" 生成唯一标识
-        const errorKey = `${errorData.message}-${errorData.stack.slice(0, 200)}`;
+        const errorKey = `${errorData.message}-${errorData.stack?.slice(0, 200) || ''}`;
         if (this.capturedErrors.has(errorKey)) return;
         this.capturedErrors.add(errorKey);
 

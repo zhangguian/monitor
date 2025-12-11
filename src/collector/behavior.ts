@@ -17,8 +17,8 @@ let routeEnterTime = Date.now();
 export class BehaviorCollector extends BaseCollector {
     // 滚动防抖延迟（200ms）
     private scrollDebounceDelay = 200;
-    // 滚动防抖函数
-    private debouncedHandleScroll = debounce(this.handleScroll.bind(this), this.scrollDebounceDelay);
+    // 滚动防抖函数（在构造函数中初始化）
+    private debouncedHandleScroll: (...args: any[]) => void;
 
     // 保存 hashchange 事件处理函数的引用（用于正确移除监听器）
     private hashChangeHandler: (event: HashChangeEvent) => void;
@@ -26,6 +26,8 @@ export class BehaviorCollector extends BaseCollector {
     constructor(worker: Worker) {
         super(worker, 'behavior');
         this.hashChangeHandler = this.handleRouteChange.bind(this);
+        // 在构造函数中初始化防抖函数，确保 this 已正确绑定
+        this.debouncedHandleScroll = debounce(this.handleScroll.bind(this), this.scrollDebounceDelay);
     }
 
 
@@ -74,7 +76,22 @@ export class BehaviorCollector extends BaseCollector {
         const scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
         const scrollHeight = document.documentElement.scrollHeight || document.body.scrollHeight;
         const clientHeight = document.documentElement.clientHeight || window.innerHeight;
-        const scrollPercent = Math.round((scrollTop / (scrollHeight - clientHeight)) * 100);
+        
+        // 避免除以 0 的错误
+        const denominator = scrollHeight - clientHeight;
+        const scrollPercent = denominator > 0 
+            ? Math.round((scrollTop / denominator) * 100) 
+            : 0;
+        
+        // 调试日志
+        console.log('[MonitorSDK] 滚动事件处理：', {
+            scrollTop,
+            scrollHeight,
+            clientHeight,
+            scrollPercent,
+            needCollect: this.needCollect
+        });
+        
         this.sendLog<BehaviorLog>({
             behaviorType: 'scroll',
             scrollPercent
