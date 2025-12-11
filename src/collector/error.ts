@@ -141,4 +141,13 @@ export class ErrorCollector extends BaseCollector {
         this.capturedErrors.clear();
         this.needCollect = false;
     }
+
+    /**
+     * 自定义错误上报（供业务方手动调用）
+     * @param errorData 自定义错误数据
+     */
+    public reportCustomError(errorData: Omit<ErrorLog, keyof BaseLog>): void {
+        if (!this.needCollect) return;
+        this.handleError(errorData);
+    }
 }

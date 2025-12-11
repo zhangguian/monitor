@@ -200,4 +200,18 @@ export class BehaviorCollector extends BaseCollector {
 
         this.needCollect = false;
     }
+
+    /**
+     * 自定义行为埋点（供业务方手动调用）
+     * @param behaviorType 行为类型（如 "submit_order"、"collect_goods" 等）
+     * @param customData 自定义业务数据
+     */
+    public reportCustomBehavior(behaviorType: string, customData: Record<string, any>): void {
+        if (!this.needCollect) return;
+
+        this.sendLog<BehaviorLog>({
+            behaviorType: behaviorType as any, // 允许自定义行为类型
+            ...customData // 合并自定义业务数据
+        });
+    }
 }

@@ -197,12 +197,19 @@ export const MonitorSDK = {
             }
         }
     },
-    // // 自定义埋点接口（如业务方手动上报行为）
-    // reportCustomBehavior: (behaviorType, customData) => {
-    //     collectors.behavior?.reportCustomBehavior(behaviorType, customData);
-    // },
-    // // 自定义错误上报接口（如业务方手动上报已知错误）
-    // reportCustomError: (errorData) => {
-    //     collectors.error?.reportCustomError(errorData);
-    // }
+    /**
+     * 自定义埋点接口（如业务方手动上报行为）
+     * @param behaviorType 行为类型（如 "submit_order"、"collect_goods" 等）
+     * @param customData 自定义业务数据
+     */
+    reportCustomBehavior: (behaviorType: string, customData: Record<string, any>) => {
+        collectors.behavior?.reportCustomBehavior(behaviorType, customData);
+    },
+    /**
+     * 自定义错误上报接口（如业务方手动上报已知错误）
+     * @param errorData 自定义错误数据
+     */
+    reportCustomError: (errorData: any) => {
+        collectors.error?.reportCustomError(errorData);
+    }
 };
