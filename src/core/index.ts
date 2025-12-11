@@ -1,4 +1,4 @@
-import  {MonitorConfig} from "../types";
+import  {MonitorConfig, ErrorLog, BaseLog} from "../types";
 import {BehaviorCollector} from "../collector/behavior";
 import {ErrorCollector} from "../collector/error";
 import {ExposureCollector} from "../collector/exposure";
@@ -158,8 +158,7 @@ export const destroyMonitorSDK = () => {
         worker.terminate();
         worker = null;
     }
-    // 清空 IndexedDB 存储（可选，根据业务需求）
-    storage.clearQueue();
+    // 保留未上报日志，下次初始化时会自动重试上报
     console.log('[MonitorSDK] 已销毁');
 };
 
@@ -209,7 +208,7 @@ export const MonitorSDK = {
      * 自定义错误上报接口（如业务方手动上报已知错误）
      * @param errorData 自定义错误数据
      */
-    reportCustomError: (errorData: any) => {
+    reportCustomError: (errorData: Omit<ErrorLog, keyof BaseLog>) => {
         collectors.error?.reportCustomError(errorData);
     }
 };

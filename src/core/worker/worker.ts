@@ -548,7 +548,6 @@ self.addEventListener('message', async (event) => {
                 // 加入内存队列
                 logQueue.push(log);
                 console.log(\`[Worker 添加日志成功] UUID: \${log.uuid}，类型: \${log.type}，当前队列长度: \${logQueue.length}\`);
-                console.table(logQueue)
 
                 // 检查是否需要落盘（队列超阈值）
                 await flushQueueToStorage();

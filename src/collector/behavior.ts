@@ -210,7 +210,7 @@ export class BehaviorCollector extends BaseCollector {
         if (!this.needCollect) return;
 
         this.sendLog<BehaviorLog>({
-            behaviorType: behaviorType as any, // 允许自定义行为类型
+            behaviorType: behaviorType, // 允许自定义行为类型
             ...customData // 合并自定义业务数据
         });
     }

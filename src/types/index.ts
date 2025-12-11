@@ -32,7 +32,7 @@ export interface BaseLog {
 /** 用户行为日志类型 */
 export interface BehaviorLog extends BaseLog {
     type: 'behavior';
-    behaviorType: 'click' | 'scroll' | 'routeChange'; // 行为类型
+    behaviorType: 'click' | 'scroll' | 'routeChange' | string; // 行为类型，支持自定义扩展
     target?: string; // 点击目标（如"立即购买按钮"）
     position?: { x: number; y: number }; // 点击位置
     scrollPercent?: number; // 滚动百分比
